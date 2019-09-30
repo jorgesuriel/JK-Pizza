@@ -1,7 +1,148 @@
+#!/bin/bash
+#Presented By: Jorge, Jose, and Kathleen
+clear
+echo " ***************    W E L C O M E    T O   ***************"
+echo "         ____ ___      _____  ________________    _"
+echo "        / / //__/     / __  \ \  /__   /__   /   / \""
+echo "       / /  ,<       / /_/  / / /   / /   / /   //\ \""
+echo "  __  / / /\        /   __ / / /   / /   / /   / ___ \""
+echo " / /_/ / /  \ \    /  /     / /   / /___/ /__ / /   \ \""
+echo " \____/_/    \_\  /__/     /__\  /_____/_____/_/     \_\""
+echo "Pizza cooked to perfection." 
 
-echo          ____ ___      _____  ________________    _
-echo         / / //__/     / __  \ \  /__   /__   /   / \ 
-echo        / /  ,<       / /_/  / / /   / /   / /   //\ \
-echo   __  / / /\        /   __ / / /   / /   / /   / ___ \
-echo  / /_/ / /  \ \    /  /     / /   / /___/ /__ / /   \ \
-echo  \____/_/    \_\  /__/     /__\  /_____/_____/_/     \_\  .
+choice=""
+#Pizza Names
+pizzaC="Cheese Pizza"
+pizzaV="Veggie Delight"
+pizzaM="Meat Lovers Pizza"
+
+#Pizza prices
+cPrice=4.00 #Cheese
+vPrice=5.00 #Veggie
+mPrice=6.00 #Meat Lover's
+
+#INTEGER Pizza prices
+#cPrice=4 #Cheese
+#vPrice=5 #Veggie
+#mPrice=6 #Meat Lover's
+
+#Pizza quantity
+amtC=0 #Cheese
+amtV=0 #Veggies
+amtM=0 #Meat Lover's
+
+#Totals
+totalP=0   #Total quantity of pizzas
+subtotal=0 #Subtotal 
+final=0    #final cost of pizzas
+
+#Logical loop. If you want to order, continues. Otherwise program ends
+#EXCEPTION HANDLING. Case for numbers like 3
+
+function finalCheck 
+{
+read -p "Anything else? (Yes or No)  " loopStart
+case $loopStart in
+       [Yy]* ) ordering; ;; #Continues the ordering process
+       [Nn]* ) calc; ;; #goes towards the end 
+        *)
+        echo "Please enter yes or no."
+        finalCheck
+   esac
+}
+
+function loop
+{
+read -p "Would you like to order? (Yes or No)  " loopStart
+  case $loopStart in
+    [Yy]*) ;;
+    [nN]*) exit;;
+    *)
+    echo "Please answer yes or no" 
+    loop
+   esac
+}
+#RECEIPT
+function receipt 
+{ #function that prints out a receipt
+  echo
+  echo "You ordered $totalP pizza(s)."
+  if [ $amtC -ge 1 ] #if you ordered the pizza, print
+    then echo "$amtC Cheese Pizza $ $itemC" #format is quantity, item, cost for items
+  fi
+
+  if [ $amtV -ge 1 ] #if you ordered the pizza, print
+   then echo "$amtV Veggie Pizza is $ $itemV" #format is quantity, item, cost for items
+  fi
+  
+  if [ $amtM -ge 1 ] #if you ordered the pizza, print
+   then echo "$amtM Meat Pizza is   $ $itemM" #format is quantity, item, cost for items
+  fi
+  
+  
+  echo "Subtotal: $ $subtotal"
+  echo "Taxes: $ $TAX"
+  echo "Total: $ $final" #grand total
+}
+ 
+
+#function that does the maths on cost
+function calc 
+{
+itemC=$(($amtC*$cPrice))                         #holds subtotal for cheese
+itemV=$(($amtV*$vPrice))                         #holds subtotal for veggie
+itemM=$(($amtM*$mPrice))                         #holds subtotal for meat lovers
+float=.07
+int=2
+subtotal=$(($itemC+$itemV+$itemM))
+
+#TAX=$(($subtotal*$int)) #integer tax
+TAX=$(echo "$subtotal*$float"|bc) #decimals
+
+#final=$(($subtotal+$TAX)) #integer final
+final=$(echo "$subtotal+$TAX"|bc) #decimals
+
+receipt;
+}
+
+
+#The process of taking an order, taking down options and quantity
+#ELSE CLAUSE, if you pick anything other than 1 2 3
+function ordering 
+{ 
+echo "What would you like to order? " 
+echo "1. $pizzaC $" $cPrice
+echo "2. $pizzaV $" $vPrice
+echo "3. $pizzaM $" $mPrice
+read choice #Stores choice for comparison
+
+if test $choice = 1
+then 
+amtC=$(($amtC+1)) #increments # of Cheese Pizzas on order.
+totalP=$(($totalP+1)) #adds a pizza to total # of pizzas
+echo "You chose a $pizzaC" #prints choice
+finalCheck #after picking a pizza, you have a final check before calculation
+
+elif test $choice = 2
+then 
+amtV=$(($amtV+1)) #increments # of Veggie Pizzas on order.
+totalP=$(($totalP+1)) #adds a pizza to total # of pizzas
+echo "You chose a $pizzaV" #prints choice
+finalCheck #after picking a pizza, you have a final check before calculation
+
+elif test $choice = 3
+then
+amtM=$(($amtM+1)) #increments # of Meat Lover's Pizzas on order.
+totalP=$(($totalP+1)) #adds a pizza to total # of pizzas
+echo "You chose a $pizzaM" #prints choice
+finalCheck #after picking a pizza, you have a final check before calculation
+
+else 
+echo "Pick a number 1-3"
+ordering #invalid options call the ordering function, until you pick a valid option
+
+fi
+}
+
+loop;
+ordering;
